@@ -1,16 +1,18 @@
-version: "3.8"
+version: "3.8"  # Define a versão do Docker Compose
+
 services:
-  db:
-    image: postgres:13.0-alpine
-    environment:
-      POSTGRES_USER: bookstore_dev
-      POSTGRES_PASSWORD: bookstore_dev
-      POSTGRES_DB: bookstore_dev_db
+  db:  # Serviço do banco de dados
+    image: postgres:13.0-alpine  # Usa a imagem do PostgreSQL leve (Alpine)
+    environment:  # Configurações do banco de dados
+      POSTGRES_USER: bookstore_dev  # Usuário do banco
+      POSTGRES_PASSWORD: bookstore_dev  # Senha do banco
+      POSTGRES_DB: bookstore_dev_db  # Nome do banco de dados
     ports:
-      - "5432:5432"
-  web:
-    build: .
+      - "5432:5432"  # Mapeia a porta do PostgreSQL (local:container)
+
+  web:  # Serviço da aplicação web
+    build: .  # Constrói a imagem do diretório atual
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Mapeia a porta da aplicação (local:container)
     depends_on:
-      - db
+      - db  # Define que o serviço web depende do banco de dados
