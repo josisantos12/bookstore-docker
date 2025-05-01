@@ -1,18 +1,29 @@
-version: "3.8"  # Define a versão do Docker Compose
+version: "3.8"
 
 services:
-  db:  # Serviço do banco de dados
-    image: postgres:13.0-alpine  # Usa a imagem do PostgreSQL leve (Alpine)
-    environment:  # Configurações do banco de dados
-      POSTGRES_USER: bookstore_dev  # Usuário do banco
-      POSTGRES_PASSWORD: bookstore_dev  # Senha do banco
-      POSTGRES_DB: bookstore_dev_db  # Nome do banco de dados
+  db:
+    image: mysql:8.0
+    container_name: bookstore_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: bookstore_dev_db
+      MYSQL_USER: bookstore_dev
+      MYSQL_PASSWORD: bookstore_dev
     ports:
-      - "5432:5432"  # Mapeia a porta do PostgreSQL (local:container)
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
-  web:  # Serviço da aplicação web
-    build: .  # Constrói a imagem do diretório atual
+  web:
+    build: .
+    container_name: bookstore_web
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      DATABASE_URL: "mysql://bookstore_dev:bookstore_dev@db:3306/bookstore_dev_db"
     ports:
-      - "8000:8000"  # Mapeia a porta da aplicação (local:container)
+      - "8000:8000"
     depends_on:
-      - db  # Define que o serviço web depende do banco de dados
+      - db
+
+volumes:
+  mysql_data:
