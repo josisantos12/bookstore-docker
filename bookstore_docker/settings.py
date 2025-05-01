@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-uxpgkdd6()*1^$cs4_&r=h5y9m9k*+y+j5!c5me3jcy+l6nd(1
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
+
+import pymysql
+pymysql.install_as_MySQLdb()
+
 # Application definition
 
 INSTALLED_APPS = [
