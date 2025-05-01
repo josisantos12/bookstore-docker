@@ -1,5 +1,8 @@
 version: "3.8"
 
+networks:
+  bookstore_network:  # Criação da rede personalizada
+
 services:
   db:
     image: mysql:8.0
@@ -11,8 +14,8 @@ services:
       MYSQL_PASSWORD: bookstore_dev
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
+    networks:
+      - bookstore_network  # Conectando ao MySQL
 
   web:
     build: .
@@ -24,6 +27,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - bookstore_network  # Conectando ao Django
 
 volumes:
   mysql_data:
