@@ -1,33 +1,30 @@
-
 networks:
-  bookstore_network:  # Criação da rede personalizada
+  bookstore_network:  # Criando uma rede personalizada para permitir a comunicação entre serviços.
 
 services:
   db:
-    image: mysql:8.0
+    image: postgres:latest
     container_name: bookstore_db
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: bookstore_dev_db
-      MYSQL_USER: bookstore_dev
-      MYSQL_PASSWORD: bookstore_dev
+      POSTGRES_DB: bookstore_dev
+      POSTGRES_USER: bookstore_dev
+      POSTGRES_PASSWORD: bookstore_dev
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks:
-      - bookstore_network  # Conectando ao MySQL
+      - bookstore_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Configurando persistência dos dados
 
-  web:
-    build: .
-    container_name: bookstore_web
-    command: python manage.py runserver 0.0.0.0:8000
-    environment:
-      DATABASE_URL: "mysql://bookstore_dev:bookstore_dev@db:3306/bookstore_dev_db"
-    ports:
-      - "8000:8000"
+  web:  # Serviço para a aplicação web.
+    build: .  # Define que o contêiner será construído a partir do diretório atual.
     depends_on:
-      - db
+      - db  # Garante que o serviço 'db' seja iniciado antes do 'web'
+    entrypoint: ["./wait-for-db.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
-      - bookstore_network  # Conectando ao Django
+      - bookstore_network  # Conecta a aplicação à rede personalizada.
+    environment:
+      DATABASE_URL: "postgres://bookstore_dev:bookstore_dev@db:5432/bookstore_dev"
 
 volumes:
-  mysql_data:
+  postgres_data:  # Volume correto para armazenar dados do PostgreSQL

@@ -79,18 +79,11 @@ WSGI_APPLICATION = 'bookstore_docker.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 import os
+import dj_database_url
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DATABASE', 'bookstore_dev_db'),
-        'USER': os.getenv('MYSQL_USER', 'bookstore_dev'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD', 'bookstore_dev'),
-        'HOST': os.getenv('MYSQL_HOST', 'db'),
-        'PORT': os.getenv('MYSQL_PORT', '3306'),
-    }
+    'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
 }
-
 
 
 # Password validation
