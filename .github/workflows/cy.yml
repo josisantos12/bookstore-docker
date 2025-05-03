@@ -39,7 +39,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip  # Atualiza o gerenciador de pacotes (pip).
           pip install -r requirements.txt  # Instala as dependências definidas no arquivo requirements.txt.
-          pip show pymysql || pip install pymysql  # Instala pymysql se não estiver presente.
           pip show psycopg || pip install psycopg  # Instala psycopg se não estiver presente.
 
       - name: Testar conexão com PostgreSQL
