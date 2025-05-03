@@ -7,15 +7,9 @@ host="$1"
 shift
 cmd="$@"
 
-until mysqladmin ping -h "$host" --silent; do
-  echo "Waiting for MySQL..."
+until pg_isready -h "$host" -q; do
+  echo "Waiting for PostgreSQL..."
   sleep 2
 done
 
-exec $cm
-
-# Copia o script wait-for-db.sh para o contêiner
-COPY wait-for-db.sh /app/
-
-# Concede permissão de execução ao script
-RUN chmod +x /app/wait-for-db.sh
+exec $cmd

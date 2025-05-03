@@ -8,8 +8,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Instala as dependências necessárias para o MySQL
-RUN apk add --no-cache mariadb-connector-c-dev gcc python3-dev musl-dev libffi-dev
-
+RUN apk add --no-cache postgresql-client
 # Instala o cliente MySQL
 RUN apk add --no-cache mysql-client
 
