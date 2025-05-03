@@ -11,20 +11,15 @@ services:
       MYSQL_USER: bookstore_dev  # Define um usuário chamado "bookstore_dev".
       MYSQL_PASSWORD: bookstore_dev  # Define a senha do usuário "bookstore_dev".
     ports:
-      - "3306:3306"  # Mapeia a porta 3306 do MySQL para acesso externo.
+      - "3307:3306"  # Mapeia a porta 3306 do MySQL para acesso externo.
     networks:
       - bookstore_network  # Conecta o banco de dados à rede personalizada.
 
   web:  # Serviço para a aplicação web.
     build: .  # Define que o contêiner será construído a partir do diretório atual.
-    container_name: bookstore_web  # Define o nome do contêiner.
-    command: python manage.py runserver 0.0.0.0:8000  # Inicia o servidor Django na porta 8000.
-    environment:
-      DATABASE_URL: "mysql://bookstore_dev:bookstore_dev@db:3306/bookstore_dev_db"  # Define a URL do banco de dados usada pela aplicação.
-    ports:
-      - "8000:8000"  # Mapeia a porta 8000 do Django para acesso externo.
     depends_on:
-      - db  # Garante que o banco de dados seja iniciado antes da aplicação web.
+      - db  # Garante que o serviço 'db' seja iniciado antes do 'web'
+    entrypoint: ["./wait-for-db.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - bookstore_network  # Conecta a aplicação à rede personalizada.
 
