@@ -11,6 +11,21 @@ jobs:
   build:  # Definição do job chamado 'build', responsável por rodar testes e configurar dependências.
     runs-on: ubuntu-latest  # Define que o ambiente onde o job será executado será um Ubuntu na versão mais recente.
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout do código  # Passo para clonar o repositório no ambiente do GitHub Actions.
         uses: actions/checkout@v4  # Utiliza a ação oficial do GitHub para fazer o checkout do código.
@@ -24,6 +39,12 @@ jobs:
         run: |
           python -m pip install --upgrade pip  # Atualiza o gerenciador de pacotes (pip).
           pip install -r requirements.txt  # Instala as dependências definidas no arquivo requirements.txt.
+          pip show pymysql || pip install pymysql  # Instala pymysql se não estiver presente.
+          pip show psycopg || pip install psycopg  # Instala psycopg se não estiver presente.
+
+      - name: Testar conexão com PostgreSQL
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT 'PostgreSQL funcionando!'"
 
       - name: Rodar testes  # Executa os testes para validar a aplicação.
         run: |
