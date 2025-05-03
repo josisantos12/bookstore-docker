@@ -27,8 +27,7 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 
-import pymysql
-pymysql.install_as_MySQLdb()
+
 
 # Application definition
 
