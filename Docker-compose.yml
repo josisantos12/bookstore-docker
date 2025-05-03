@@ -1,32 +1,31 @@
+
 networks:
   bookstore_network:  # Criando uma rede personalizada para permitir a comunicação entre serviços.
 
 services:
-  db:  # Serviço do banco de dados MySQL.
-    image: mysql:8.0  # Utiliza a imagem oficial do MySQL versão 8.0.
-    container_name: bookstore_db  # Define o nome do contêiner.
-    environment:  # Variáveis de ambiente para configurar o banco de dados.
-      MYSQL_ROOT_PASSWORD: root_password  # Define a senha do usuário root.
-      MYSQL_DATABASE: bookstore_dev_db  # Cria o banco de dados chamado "bookstore_dev_db".
-      MYSQL_USER: bookstore_dev  # Define um usuário chamado "bookstore_dev".
-      MYSQL_PASSWORD: bookstore_dev  # Define a senha do usuário "bookstore_dev".
+  db:
+    image: postgres:latest
+    container_name: bookstore_db
+    environment:
+      POSTGRES_DB: bookstore_dev
+      POSTGRES_USER: bookstore_dev
+      POSTGRES_PASSWORD: bookstore_dev
     ports:
-      - "3306:3306"  # Mapeia a porta 3306 do MySQL para acesso externo.
+      - "5432:5432"
     networks:
-      - bookstore_network  # Conecta o banco de dados à rede personalizada.
+      - bookstore_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Configurando persistência dos dados
 
   web:  # Serviço para a aplicação web.
     build: .  # Define que o contêiner será construído a partir do diretório atual.
-    container_name: bookstore_web  # Define o nome do contêiner.
-    command: python manage.py runserver 0.0.0.0:8000  # Inicia o servidor Django na porta 8000.
-    environment:
-      DATABASE_URL: "mysql://bookstore_dev:bookstore_dev@db:3306/bookstore_dev_db"  # Define a URL do banco de dados usada pela aplicação.
-    ports:
-      - "8000:8000"  # Mapeia a porta 8000 do Django para acesso externo.
     depends_on:
-      - db  # Garante que o banco de dados seja iniciado antes da aplicação web.
+      - db  # Garante que o serviço 'db' seja iniciado antes do 'web'
+    entrypoint: ["./wait-for-db.sh", "db", "python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - bookstore_network  # Conecta a aplicação à rede personalizada.
+    environment:
+      DATABASE_URL: "postgres://bookstore_dev:bookstore_dev@db:5432/bookstore_dev"
 
 volumes:
-  mysql_data:  # Define um volume para persistência dos dados do MySQL, garantindo que os dados não sejam perdidos ao reiniciar o contêiner.
+  postgres_data:  # Volume correto para armazenar dados do PostgreSQL

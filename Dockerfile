@@ -8,7 +8,9 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Instala as dependências necessárias para o MySQL
-RUN apk add --no-cache mariadb-connector-c-dev gcc python3-dev musl-dev libffi-dev
+RUN apk add --no-cache postgresql-client
+# Instala o cliente MySQL
+RUN apk add --no-cache mysql-client
 
 # Instala as dependências do Python sem armazenar cache, para manter a imagem leve
 RUN pip install --no-cache-dir -r requirements.txt
