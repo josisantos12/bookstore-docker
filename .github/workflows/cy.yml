@@ -39,7 +39,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip  # Atualiza o gerenciador de pacotes (pip).
           pip install -r requirements.txt  # Instala as dependências definidas no arquivo requirements.txt.
-          pip show psycopg || pip install psycopg  # Instala psycopg se não estiver presente.
+
+      - name: Aguardar PostgreSQL
+        run: |
+          for i in {1..10}; do
+            PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT 1" && break
+            echo "Aguardando PostgreSQL..."
+            sleep 5
+          done
 
       - name: Testar conexão com PostgreSQL
         run: |
