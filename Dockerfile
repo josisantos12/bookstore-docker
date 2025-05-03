@@ -7,10 +7,10 @@ WORKDIR /app
 # Copia o arquivo de dependências para o contêiner
 COPY requirements.txt /app/
 
-# Instala as dependências do sistema necessárias para o PostgreSQL
-RUN apk add --no-cache postgresql-libs gcc python3-dev musl-dev libpq
-RUN apk add --no-cache postgresql-libs libpq
-RUN apk add --no-cache postgresql-libs libpq gcc python3-dev musl-dev
+# Instala as dependências necessárias para o MySQL
+RUN apk add --no-cache postgresql-client
+# Instala o cliente MySQL
+RUN apk add --no-cache mysql-client
 
 # Instala as dependências do Python sem armazenar cache, para manter a imagem leve
 RUN pip install --no-cache-dir -r requirements.txt
